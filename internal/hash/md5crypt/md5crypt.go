@@ -144,16 +144,24 @@ func (*Function) Format(hash, salt []byte, cost uint) string {
 //
 // The cost parameter is ignored for md5crypt.
 func (f *Function) HashPassword(password string, cost uint) (string, error) {
-	// generate salt
-	salt := make([]byte, saltMaxLen)
-	_, err := rand.Read(salt)
+	// Generate salt by converting six bytes of random data into the b64crypt
+	// format to produce 8 characters. This salt is not interpreted as encoded in
+	// Hash(), but that's just the way md5crypt works.
+	rawSalt := make([]byte, 6)
+	_, err := rand.Read(rawSalt)
 	if err != nil {
 		return "", fmt.Errorf("couldn't generate random salt: %v", err)
 	}
+	var salt bytes.Buffer
+	salt.Write(b64crypt.EncodeBytes(rawSalt[0], rawSalt[1], rawSalt[2]))
+	salt.Write(b64crypt.EncodeBytes(rawSalt[3], rawSalt[4], rawSalt[5]))
+	// convert password
 	key := []byte(password)
-	hash, err := f.Hash(key, salt, cost)
+	// calculate hash
+	hash, err := f.Hash(key, salt.Bytes(), cost)
 	if err != nil {
 		return "", fmt.Errorf("couldn't generate password hash: %w", err)
 	}
-	return f.Format(hash, salt, cost), nil
+	// format hash
+	return f.Format(hash, salt.Bytes(), cost), nil
 }

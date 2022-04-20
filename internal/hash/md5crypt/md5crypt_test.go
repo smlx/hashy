@@ -21,6 +21,10 @@ func TestHash(t *testing.T) {
 			input:  hashTestInput{"mickey5", "D89ubl/e"},
 			expect: "dJ8XW4DfrJHTrnwCdx3Ji1",
 		},
+		"test case 1": {
+			input:  hashTestInput{"foo", "V0I8Ox6J"},
+			expect: "I5JKgWHoC9o7ugE.JLcar/",
+		},
 	}
 	var c md5crypt.Function
 	for name, tc := range testCases {
