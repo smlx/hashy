@@ -40,8 +40,8 @@ type Function struct{}
 // Hash returns the hash of the given key. The cost argument is ignored, since
 // md5crypt has no such parameter.
 //
-// Warning: The permutation logic in this function reflects cryptographic era
-// in which it was written.
+// Warning: The permutation logic in this function reflects the cryptographic
+// era in which it was written.
 func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// perform some safety checks
 	if len(key) > keyMaxLen {
@@ -77,7 +77,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	}
 	// add more input determined by the length of the key
 	for i := len(key); i > 0; i >>= 1 {
-		if (i & 1) == 1 {
+		if i%2 != 0 {
 			buf.WriteByte(0)
 		} else {
 			buf.WriteByte(key[0])
