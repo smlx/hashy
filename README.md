@@ -9,6 +9,20 @@
 `hashy` is a CLI tool and Go library for inspection and manipulation of password hashes, such as you may find in `/etc/shadow` on Unix systems.
 It may be useful to sysadmins or security researchers.
 
+---
+**WARNING**
+
+Both the CLI and library interfaces are currently unstable may change at any time.
+
+---
+---
+**DISCLAIMER**
+
+I make no assertion about the security or otherwise of this software and I am not a cryptographer.
+If you are, please take a look at the code and send PRs or issues. :green_heart:
+
+---
+
 ### Features
 
 * Generate a password hash (similar to `mkpasswd`([code](https://github.com/rfc1036/whois), [manpage](https://manpages.debian.org/testing/whois/mkpasswd.1.en.html))
@@ -33,21 +47,21 @@ If you are interested in a function not listed below please open an issue with d
 
 #### Unix crypt() functions
 
-|             | Supported | Notes |
-| ---         | ---       | ---   |
-| bcrypt      | ⏳        | -     |
-| md5crypt    | ✅        | -     |
-| scrypt      | ⏳        | -     |
-| sha1crypt   | ⏳        | -     |
-| sha256crypt | ⏳        | -     |
-| sha512crypt | ⏳        | -     |
-| yescrypt    | ⏳        | -     |
+|             | Supported | Secure?                                                                                                                                                  |
+| ---         | ---       | ---                                                                                                                                                      |
+| bcrypt      | ⏳        | -                                                                                                                                                        |
+| md5crypt    | ✅        | [No](https://web.archive.org/web/20190324130136/http://phk.freebsd.dk:80/sagas/md5crypt_eol.html), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2012-3287) |
+| scrypt      | ⏳        | -                                                                                                                                                        |
+| sha1crypt   | ⏳        | -                                                                                                                                                        |
+| sha256crypt | ⏳        | -                                                                                                                                                        |
+| sha512crypt | ⏳        | -                                                                                                                                                        |
+| yescrypt    | ⏳        | -                                                                                                                                                        |
 
 #### Other software
 
-|                              | Supported | Notes |
-| ---                          | ---       | ---   |
-| mariadb/mysql `OLD_PASSWORD` | ⏳        | -     |
+|                              | Supported | Secure?                                                                                                                                         |
+| ---                          | ---       | ---                                                                                                                                             |
+| mariadb/mysql `OLD_PASSWORD` | ✅        | [No](https://security.stackexchange.com/questions/3133/mysql-old-password-cryptanalysis), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2003-1480) |
 
 ## Install and Use
 
