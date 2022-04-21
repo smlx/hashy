@@ -15,7 +15,7 @@ var (
 
 // CLI represents the command-line interface.
 type CLI struct {
-	ID       IDCmd       `kong:"cmd,help='Identify a hash'"`
+	ID       IDCmd       `kong:"cmd,help='Identify a password hash'"`
 	Check    CheckCmd    `kong:"cmd,help='Check a password against a hash'"`
 	Generate GenerateCmd `kong:"cmd,help='Generate a hash from a password'"`
 	Version  VersionCmd  `kong:"cmd,help='Print version information'"`

@@ -7,6 +7,8 @@ var (
 	ErrSaltLen = errors.New("invalid salt length")
 	// ErrKeyLen is returned when a key of invalid length is passed.
 	ErrKeyLen = errors.New("invalid key length")
+	// ErrParse is returned when an encoded hash doesn't match the expected format.
+	ErrParse = errors.New("invalid encoded format")
 )
 
 // The Function interface is implemented by each of the hash function

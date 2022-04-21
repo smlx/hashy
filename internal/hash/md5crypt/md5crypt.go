@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"fmt"
+	"regexp"
 
 	"github.com/smlx/hashy/internal/b64crypt"
 	"github.com/smlx/hashy/internal/hash"
@@ -23,7 +24,15 @@ const (
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS in a similar
 	// manner to the musl implementation
 	keyMaxLen = 1 << 15
+	// minParseMatches is the minimum matches expected in successful parsing
+	minParseMatches = 3
 )
+
+// parseRegex is used to parse the formatted hash into its component parts.
+// This regex is taken from the libxcrypt manpage and extended with capture
+// groups.
+var parseRegex = regexp.MustCompile(
+	`^\$1\$([^$:\n]{1,8})\$([./0-9A-Za-z]{22})$`)
 
 // Function implements the hash.Function interface for the md5 function.
 type Function struct{}
@@ -130,7 +139,12 @@ func (f *Function) Check(key, hash, salt []byte, cost uint) (bool, error) {
 
 // Parse the given hash string in its common encoded form.
 func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
-	return nil, nil, 0, nil
+	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
+	if len(matches[0]) < minParseMatches {
+		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
+			hash.ErrParse)
+	}
+	return matches[0][2], matches[0][1], 0, nil
 }
 
 // Format the given parameters into the common "password hash" form.
