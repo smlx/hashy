@@ -1,5 +1,6 @@
 // Package b64crypt implements an encoding similar to RFC4648 Base64, but with
-// a slightly different character set.
+// a slightly different character set. This encoding is used by Unix crypt() to
+// encode password hashes.
 package b64crypt
 
 import "bytes"

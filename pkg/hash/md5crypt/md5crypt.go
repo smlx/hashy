@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/smlx/hashy/internal/b64crypt"
-	"github.com/smlx/hashy/internal/hash"
+	"github.com/smlx/hashy/pkg/b64crypt"
+	"github.com/smlx/hashy/pkg/hash"
 )
 
 const (
@@ -140,7 +140,7 @@ func (f *Function) Check(key, hash, salt []byte, cost uint) (bool, error) {
 // Parse the given hash string in its common encoded form.
 func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
-	if len(matches[0]) < minParseMatches {
+	if len(matches) < 1 || len(matches[0]) < minParseMatches {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
 			hash.ErrParse)
 	}
