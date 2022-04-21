@@ -1,4 +1,4 @@
-name: Test Suite
+name: Test
 on: pull_request
 
 jobs:
@@ -16,4 +16,4 @@ jobs:
         git config --global user.name "$GITHUB_ACTOR"
         git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
     - name: Run tests
-      run: go test -v .
+      run: go test -v ./...
