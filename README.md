@@ -16,10 +16,10 @@ Both the CLI and library interfaces are currently unstable may change at any tim
 
 ---
 ---
-**DISCLAIMER**
+**IMPORTANT NOTE**
 
-I make no assertion about the security or otherwise of this software and I am not a cryptographer.
-If you are, please take a look at the code and send PRs or issues. :green_heart:
+Many of the password hash functions implemented in this module are known to be insecure.
+Implementation should not be considered endorsement.
 
 ---
 
@@ -59,9 +59,9 @@ If you are interested in a function not listed below please open an issue with d
 
 #### Other software
 
-|                              | Supported | Secure?                                                                                                                                         |
-| ---                          | ---       | ---                                                                                                                                             |
-| mariadb/mysql `OLD_PASSWORD` | ✅        | [No](https://security.stackexchange.com/questions/3133/mysql-old-password-cryptanalysis), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2003-1480) |
+|                                | Supported | Secure?                                                                                                                                         |
+| ---                            | ---       | ---                                                                                                                                             |
+| MariaDB/MySQL `OLD_PASSWORD()` | ✅        | [No](https://security.stackexchange.com/questions/3133/mysql-old-password-cryptanalysis), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2003-1480) |
 
 ## Install and Use
 
