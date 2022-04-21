@@ -6,7 +6,7 @@
 
 ## About
 
-`hashy` is a CLI tool and Go library for inpsection and manipulation of password hashes, such as you may find in `/etc/shadow` on Unix systems.
+`hashy` is a CLI tool and Go library for inspection and manipulation of password hashes, such as you may find in `/etc/shadow` on Unix systems.
 It may be useful to sysadmins or security researchers.
 
 ### Features
@@ -20,8 +20,7 @@ It may be useful to sysadmins or security researchers.
 ### Design philosophy
 
 `hashy` aims for simplicity and good documentation.
-It does not aim for speed or to be useful for cracking password hashes.
-Use [hashcat](https://github.com/hashcat/hashcat) for that.
+It does not aim for speed or to be useful for cracking password hashes; use [hashcat](https://github.com/hashcat/hashcat) for that.
 
 ### Supported password hash functions
 
