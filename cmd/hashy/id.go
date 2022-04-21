@@ -11,7 +11,7 @@ type IDCmd struct {
 	EncodedHash string `kong:"required,arg,help='Password hash in encoded format'"`
 }
 
-// Run the ID command.
+// Run the id command.
 func (cmd *IDCmd) Run(functions map[string]hash.Function) error {
 	var matches []string
 	for id, f := range functions {
