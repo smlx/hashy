@@ -17,13 +17,20 @@ func TestHash(t *testing.T) {
 		input  hashTestInput
 		expect string
 	}{
-		"test case 0": {
+		// taken from the go-htpasswd test suite
+		"go-htpasswd compat": {
 			input:  hashTestInput{"mickey5", "D89ubl/e"},
 			expect: "dJ8XW4DfrJHTrnwCdx3Ji1",
 		},
-		"test case 1": {
+		// generated via mkpasswd
+		"mkpasswd compat": {
 			input:  hashTestInput{"foo", "V0I8Ox6J"},
 			expect: "I5JKgWHoC9o7ugE.JLcar/",
+		},
+		// taken from the musl test function
+		"musl compat": {
+			input:  hashTestInput{"Xy01@#\x01\x02\x80\x7f\xff\r\n\x81\t !", "abcd0123"},
+			expect: "9Qcg8DyviekV3tDGMZynJ1",
 		},
 	}
 	var c md5crypt.Function
