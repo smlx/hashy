@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/smlx/hashy/internal/hash/mariadboldpassword"
+	"github.com/smlx/hashy/pkg/hash/mariadboldpassword"
 )
 
 func TestHash(t *testing.T) {

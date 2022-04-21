@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/smlx/hashy/internal/hash"
+	"github.com/smlx/hashy/pkg/hash"
 )
 
 const (

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/smlx/hashy/internal/hash"
+	"github.com/smlx/hashy/pkg/hash"
 )
 
 // IDCmd represents the id command.

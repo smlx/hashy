@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/alecthomas/kong"
-	"github.com/smlx/hashy/internal/hash"
-	"github.com/smlx/hashy/internal/hash/mariadboldpassword"
-	"github.com/smlx/hashy/internal/hash/md5crypt"
+	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/hash/mariadboldpassword"
+	"github.com/smlx/hashy/pkg/hash/md5crypt"
 )
 
 var (

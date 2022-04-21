@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/smlx/hashy/internal/b64crypt"
-	"github.com/smlx/hashy/internal/hash"
+	"github.com/smlx/hashy/pkg/b64crypt"
+	"github.com/smlx/hashy/pkg/hash"
 )
 
 const (
