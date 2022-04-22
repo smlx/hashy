@@ -25,7 +25,7 @@ Implementation should not be considered endorsement.
 
 ### Features
 
-* Generate a password hash (similar to `mkpasswd`([code](https://github.com/rfc1036/whois), [manpage](https://manpages.debian.org/testing/whois/mkpasswd.1.en.html))
+* Generate a password hash (similar to `mkpasswd`([code](https://github.com/rfc1036/whois), [manpage](https://manpages.debian.org/testing/whois/mkpasswd.1.en.html)))
 * Identify the format of a password hash (similar to [`hash-identifier`](https://github.com/blackploit/hash-identifier))
 * Check if a password matches a password hash
 * Support a wide range of password hash functions (still a WIP, see the table below)
