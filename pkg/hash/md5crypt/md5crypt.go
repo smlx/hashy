@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/rand"
-	"crypto/subtle"
 	"fmt"
 	"regexp"
 
@@ -127,16 +126,6 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	return buf.Bytes()[:hashLen], nil
 }
 
-// Check returns true if the given key matches the given hash, and false
-// otherwise.
-func (f *Function) Check(key, hash, salt []byte, cost uint) (bool, error) {
-	calculatedHash, err := f.Hash(key, salt, cost)
-	if err != nil {
-		return false, err
-	}
-	return subtle.ConstantTimeCompare(hash, calculatedHash) == 1, nil
-}
-
 // Parse the given hash string in its common encoded form.
 func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
@@ -152,30 +141,30 @@ func (*Function) Format(hash, salt []byte, cost uint) string {
 	return fmt.Sprintf("%s%s$%s", prefix, salt, hash)
 }
 
-// HashPassword is a convenience method which takes a password string,
-// generates a secure salt, and returns the hash of the password and salt in
-// common "password hash" form.
-//
-// The cost parameter is ignored for md5crypt.
-func (f *Function) HashPassword(password string, cost uint) (string, error) {
-	// Generate salt by converting six bytes of random data into the b64crypt
-	// format to produce 8 characters. This salt is not interpreted as encoded in
-	// Hash(), but that's just the way md5crypt works.
+// ID returns the unique identification string of this hash function.
+func (*Function) ID() string {
+	return ID
+}
+
+// DefaultCost always returns zero for this function, as the cost parameter
+// is ignored.
+func (*Function) DefaultCost() uint {
+	return 0
+}
+
+// GenerateSalt returns nil for this function, as the function does not use a
+// salt.
+func (*Function) GenerateSalt() ([]byte, error) {
+	// Convert six bytes of random data into the b64crypt format to produce 8
+	// characters. This salt is not interpreted as encoded in Hash(), but that's
+	// just the way md5crypt works.
 	rawSalt := make([]byte, 6)
 	_, err := rand.Read(rawSalt)
 	if err != nil {
-		return "", fmt.Errorf("couldn't generate random salt: %v", err)
+		return nil, fmt.Errorf("couldn't generate random salt: %v", err)
 	}
 	var salt bytes.Buffer
 	salt.Write(b64crypt.EncodeBytes(rawSalt[0], rawSalt[1], rawSalt[2]))
 	salt.Write(b64crypt.EncodeBytes(rawSalt[3], rawSalt[4], rawSalt[5]))
-	// convert password
-	key := []byte(password)
-	// calculate hash
-	hash, err := f.Hash(key, salt.Bytes(), cost)
-	if err != nil {
-		return "", fmt.Errorf("couldn't generate password hash: %w", err)
-	}
-	// format hash
-	return f.Format(hash, salt.Bytes(), cost), nil
+	return salt.Bytes(), nil
 }

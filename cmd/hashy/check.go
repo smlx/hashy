@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/subtle"
 	"fmt"
 
 	"github.com/smlx/hashy/pkg/hash"
@@ -14,28 +15,35 @@ type CheckCmd struct {
 
 // Run the check command.
 func (cmd *CheckCmd) Run(functions map[string]hash.Function) error {
-	var matches []string
+	var fmtMatches []string
+	var passMatches []string
 	for id, f := range functions {
-		hash, salt, cost, err := f.Parse(cmd.EncodedHash)
+		queryHash, salt, cost, err := f.Parse(cmd.EncodedHash)
 		if err != nil {
 			continue
 		}
-		matches = append(matches, id)
-		ok, err := f.Check([]byte(cmd.Password), hash, salt, cost)
+		fmtMatches = append(fmtMatches, id)
+		calculatedHash, err := f.Hash([]byte(cmd.Password), salt, cost)
 		if err != nil {
-			return fmt.Errorf("couldn't check %s: %v", id, err)
+			return fmt.Errorf("couldn't hash password using %s: %v", id, err)
 		}
-		if ok {
-			fmt.Printf("password matched for hash function %s\n", id)
-			return nil
+		if subtle.ConstantTimeCompare(queryHash, calculatedHash) == 1 {
+			passMatches = append(passMatches, id)
 		}
 	}
-	if len(matches) > 0 {
-		fmt.Println("Matching hash formats:")
-		for _, m := range matches {
-			fmt.Printf("* %s\n", m)
-		}
-		return fmt.Errorf("incorrect password for all matching hash formats")
+	if len(fmtMatches) == 0 {
+		return fmt.Errorf("no matching hash format")
 	}
-	return fmt.Errorf("no matching hash format")
+	fmt.Println("Matching hash formats:")
+	for _, m := range fmtMatches {
+		fmt.Printf("* %s\n", m)
+	}
+	if len(passMatches) == 0 {
+		return fmt.Errorf("no valid password found for any matching hash formats")
+	}
+	fmt.Println("Password matches hash for:")
+	for _, m := range passMatches {
+		fmt.Printf("* %s\n", m)
+	}
+	return nil
 }
