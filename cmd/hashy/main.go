@@ -5,6 +5,7 @@ import (
 	"github.com/smlx/hashy/pkg/hash"
 	"github.com/smlx/hashy/pkg/hash/mariadboldpassword"
 	"github.com/smlx/hashy/pkg/hash/md5crypt"
+	"github.com/smlx/hashy/pkg/hash/sha1crypt"
 )
 
 var (
@@ -29,8 +30,9 @@ func main() {
 		kong.UsageOnError(),
 	)
 	functions := map[string]hash.Function{
-		md5crypt.ID:           &md5crypt.Function{},
 		mariadboldpassword.ID: &mariadboldpassword.Function{},
+		md5crypt.ID:           &md5crypt.Function{},
+		sha1crypt.ID:          &sha1crypt.Function{},
 	}
 	// execute CLI
 	kctx.FatalIfErrorf(kctx.Run(functions))

@@ -3,7 +3,6 @@ package md5crypt
 import (
 	"bytes"
 	"crypto/md5"
-	"crypto/rand"
 	"fmt"
 	"regexp"
 
@@ -146,25 +145,14 @@ func (*Function) ID() string {
 	return ID
 }
 
-// DefaultCost always returns zero for this function, as the cost parameter
-// is ignored.
+// DefaultCost always returns zero for this function, as the cost parameter is
+// ignored.
 func (*Function) DefaultCost() uint {
 	return 0
 }
 
-// GenerateSalt returns nil for this function, as the function does not use a
-// salt.
+// GenerateSalt returns a cryptographically secure salt value which is the
+// maximum size for this funciton.
 func (*Function) GenerateSalt() ([]byte, error) {
-	// Convert six bytes of random data into the b64crypt format to produce 8
-	// characters. This salt is not interpreted as encoded in Hash(), but that's
-	// just the way md5crypt works.
-	rawSalt := make([]byte, 6)
-	_, err := rand.Read(rawSalt)
-	if err != nil {
-		return nil, fmt.Errorf("couldn't generate random salt: %v", err)
-	}
-	var salt bytes.Buffer
-	salt.Write(b64crypt.EncodeBytes(rawSalt[0], rawSalt[1], rawSalt[2]))
-	salt.Write(b64crypt.EncodeBytes(rawSalt[3], rawSalt[4], rawSalt[5]))
-	return salt.Bytes(), nil
+	return b64crypt.GenerateSalt(saltMaxLen)
 }

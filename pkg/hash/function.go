@@ -9,6 +9,10 @@ var (
 	ErrKeyLen = errors.New("invalid key length")
 	// ErrParse is returned when an encoded hash doesn't match the expected format.
 	ErrParse = errors.New("invalid encoded format")
+	// ErrCost is returned when a cost value is out of range.
+	ErrCost = errors.New("invalid cost value")
+	// ErrInternal is returned when an internal error occurs.
+	ErrInternal = errors.New("invalid internal state")
 )
 
 // The Function interface is implemented by each of the hash function
@@ -23,9 +27,9 @@ type Function interface {
 
 	// ID returns the unique identification string of this hash function.
 	ID() string
-	// DefaultCost returns a reasonable default cost value if none is specified.
+	// DefaultCost returns the maximum cost value for the hash function.
 	DefaultCost() uint
-	// GenerateSalt returns a cryptogrpahically secure salt value which is the
+	// GenerateSalt returns a cryptographically secure salt value which is the
 	// maximum size for this funciton.
 	GenerateSalt() ([]byte, error)
 }

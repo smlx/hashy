@@ -85,8 +85,8 @@ func (*Function) ID() string {
 	return ID
 }
 
-// DefaultCost always returns zero for this function, as the cost parameter
-// is ignored.
+// DefaultCost always returns zero for this function, as the cost parameter is
+// ignored.
 func (*Function) DefaultCost() uint {
 	return 0
 }
