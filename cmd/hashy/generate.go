@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 // GenerateCmd represents the generate command.
@@ -14,7 +14,7 @@ type GenerateCmd struct {
 }
 
 // Run the generate command.
-func (cmd *GenerateCmd) Run(functions map[string]hash.Function) error {
+func (cmd *GenerateCmd) Run(functions map[string]pwhash.Function) error {
 	// get the function
 	f, ok := functions[cmd.Function]
 	if !ok {

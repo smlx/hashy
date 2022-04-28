@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/smlx/hashy/pkg/hash/sha1crypt"
+	"github.com/smlx/hashy/pkg/pwhash/sha1crypt"
 )
 
 type hashTestInput struct {

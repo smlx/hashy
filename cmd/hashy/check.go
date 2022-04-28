@@ -4,7 +4,7 @@ import (
 	"crypto/subtle"
 	"fmt"
 
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 // CheckCmd represents the check command.
@@ -14,7 +14,7 @@ type CheckCmd struct {
 }
 
 // Run the check command.
-func (cmd *CheckCmd) Run(functions map[string]hash.Function) error {
+func (cmd *CheckCmd) Run(functions map[string]pwhash.Function) error {
 	var fmtMatches []string
 	var passMatches []string
 	for id, f := range functions {

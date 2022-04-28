@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 const (
@@ -30,7 +30,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// perform some safety checks
 	if len(key) > keyMaxLen {
 		return nil, fmt.Errorf("key longer than %d bytes: %w", keyMaxLen,
-			hash.ErrKeyLen)
+			pwhash.ErrKeyLen)
 	}
 	// return an empty string for empty input
 	if len(key) == 0 {
@@ -69,7 +69,7 @@ func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	hashBytes := []byte(encodedHash)
 	if !parseRegex.Match(hashBytes) {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
-			hash.ErrParse)
+			pwhash.ErrParse)
 	}
 	return hashBytes, nil, 0, nil
 }

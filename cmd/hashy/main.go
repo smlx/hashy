@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/alecthomas/kong"
-	"github.com/smlx/hashy/pkg/hash"
-	"github.com/smlx/hashy/pkg/hash/mariadboldpassword"
-	"github.com/smlx/hashy/pkg/hash/md5crypt"
-	"github.com/smlx/hashy/pkg/hash/sha1crypt"
+	"github.com/smlx/hashy/pkg/pwhash"
+	"github.com/smlx/hashy/pkg/pwhash/mariadboldpassword"
+	"github.com/smlx/hashy/pkg/pwhash/md5crypt"
+	"github.com/smlx/hashy/pkg/pwhash/sha1crypt"
 )
 
 var (
@@ -29,7 +29,7 @@ func main() {
 	kctx := kong.Parse(&cli,
 		kong.UsageOnError(),
 	)
-	functions := map[string]hash.Function{
+	functions := map[string]pwhash.Function{
 		mariadboldpassword.ID: &mariadboldpassword.Function{},
 		md5crypt.ID:           &md5crypt.Function{},
 		sha1crypt.ID:          &sha1crypt.Function{},

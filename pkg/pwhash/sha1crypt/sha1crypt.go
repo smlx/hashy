@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/smlx/hashy/pkg/b64crypt"
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 const (
@@ -54,19 +54,19 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// perform some safety checks
 	if len(key) > keyMaxLen {
 		return nil, fmt.Errorf("key longer than %d bytes: %w", keyMaxLen,
-			hash.ErrKeyLen)
+			pwhash.ErrKeyLen)
 	}
 	if len(salt) > saltMaxLen {
 		return nil, fmt.Errorf("salt longer than %d bytes: %w", saltMaxLen,
-			hash.ErrSaltLen)
+			pwhash.ErrSaltLen)
 	}
 	if cost > costMax {
 		return nil, fmt.Errorf("cost larger than %d: %w", costMax,
-			hash.ErrCost)
+			pwhash.ErrCost)
 	}
 	if cost < costMin {
 		return nil, fmt.Errorf("cost smaller than %d: %w", costMin,
-			hash.ErrCost)
+			pwhash.ErrCost)
 	}
 	// prepare the HMAC
 	h := hmac.New(sha1.New, key)
@@ -84,7 +84,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	}
 	var buf bytes.Buffer
 	if len(sum) != hashLen {
-		return nil, fmt.Errorf("unexpected checksum length: %w", hash.ErrInternal)
+		return nil, fmt.Errorf("unexpected checksum length: %w", pwhash.ErrInternal)
 	}
 	for i := 0; i < hashLen-3; i += 3 {
 		buf.Write(b64crypt.EncodeBytes(sum[i], sum[i+1], sum[i+2]))
@@ -98,12 +98,12 @@ func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
 	if len(matches) < 1 || len(matches[0]) < minParseMatches {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
-			hash.ErrParse)
+			pwhash.ErrParse)
 	}
 	cost, err := strconv.ParseUint(string(matches[0][1]), 10, 64)
 	if err != nil {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s cost: %w", ID,
-			hash.ErrParse)
+			pwhash.ErrParse)
 	}
 	return matches[0][3], matches[0][2], uint(cost), nil
 }

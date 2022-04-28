@@ -1,4 +1,4 @@
-package hash
+package pwhash
 
 import "errors"
 

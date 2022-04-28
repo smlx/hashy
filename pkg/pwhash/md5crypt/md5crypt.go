@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/smlx/hashy/pkg/b64crypt"
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 const (
@@ -44,11 +44,11 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// perform some safety checks
 	if len(key) > keyMaxLen {
 		return nil, fmt.Errorf("key longer than %d bytes: %w", keyMaxLen,
-			hash.ErrKeyLen)
+			pwhash.ErrKeyLen)
 	}
 	if len(salt) > saltMaxLen {
 		return nil, fmt.Errorf("salt longer than %d bytes: %w", saltMaxLen,
-			hash.ErrSaltLen)
+			pwhash.ErrSaltLen)
 	}
 	// allocate variables
 	var buf bytes.Buffer
@@ -130,7 +130,7 @@ func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
 	if len(matches) < 1 || len(matches[0]) < minParseMatches {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
-			hash.ErrParse)
+			pwhash.ErrParse)
 	}
 	return matches[0][2], matches[0][1], 0, nil
 }
