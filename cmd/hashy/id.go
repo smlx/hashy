@@ -15,7 +15,7 @@ type IDCmd struct {
 func (cmd *IDCmd) Run(functions map[string]pwhash.Function) error {
 	var matches []string
 	for id, f := range functions {
-		_, _, _, err := f.Parse(cmd.EncodedHash)
+		_, _, _, err := f.Parse([]byte(cmd.EncodedHash))
 		if err == nil {
 			matches = append(matches, id)
 		}

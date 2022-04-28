@@ -21,7 +21,7 @@ type Function interface {
 	// Hash returns the hash of the given key.
 	Hash(key, salt []byte, cost uint) ([]byte, error)
 	// Parse the given hash string in its common encoded form.
-	Parse(encodedHash string) (hash, salt []byte, cost uint, err error)
+	Parse(encodedHash []byte) (hash, salt []byte, cost uint, err error)
 	// Format the given parameters into the common "password hash" form.
 	Format(hash, salt []byte, cost uint) string
 

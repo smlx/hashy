@@ -18,7 +18,7 @@ func (cmd *CheckCmd) Run(functions map[string]pwhash.Function) error {
 	var fmtMatches []string
 	var passMatches []string
 	for id, f := range functions {
-		queryHash, salt, cost, err := f.Parse(cmd.EncodedHash)
+		queryHash, salt, cost, err := f.Parse([]byte(cmd.EncodedHash))
 		if err != nil {
 			continue
 		}

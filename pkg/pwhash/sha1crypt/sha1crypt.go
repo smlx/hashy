@@ -25,8 +25,6 @@ const (
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS in a similar
 	// manner to the musl implementation
 	keyMaxLen = 1 << 15
-	// minParseMatches is the minimum matches expected in successful parsing
-	minParseMatches = 4
 	// costMax is the maximum number of iterations used by this hash function.
 	costMax = (1 << 32) - 1
 	// costDefault is the (arbitrary) default number of iterations used by this
@@ -40,7 +38,8 @@ const (
 // This regex is taken from the libxcrypt manpage, fixed (the manpage regex is
 // wrong), and extended with capture groups.
 var parseRegex = regexp.MustCompile(
-	`^\$sha1\$([1-9][0-9]+)\$([./0-9A-Za-z]{1,64})\$([./0-9A-Za-z]{28})$`)
+	`^\$sha1\$(?P<cost>[1-9][0-9]+)\$(?P<salt>[./0-9A-Za-z]{1,64})\$` +
+		`(?P<hash>[./0-9A-Za-z]{28})$`)
 
 // Function implements the hash.Function interface for the md5 function.
 type Function struct{}
@@ -94,18 +93,21 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 }
 
 // Parse the given hash string in its common encoded form.
-func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
-	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
-	if len(matches) < 1 || len(matches[0]) < minParseMatches {
+func (*Function) Parse(encodedHash []byte) ([]byte, []byte, uint, error) {
+	matches := parseRegex.FindSubmatch(encodedHash)
+	rawCost := matches[parseRegex.SubexpIndex("cost")]
+	salt := matches[parseRegex.SubexpIndex("salt")]
+	hash := matches[parseRegex.SubexpIndex("hash")]
+	if len(rawCost) == 0 || len(salt) == 0 || len(hash) == 0 {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
 			pwhash.ErrParse)
 	}
-	cost, err := strconv.ParseUint(string(matches[0][1]), 10, 64)
+	cost, err := strconv.ParseUint(string(rawCost), 10, 64)
 	if err != nil {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s cost: %w", ID,
 			pwhash.ErrParse)
 	}
-	return matches[0][3], matches[0][2], uint(cost), nil
+	return hash, salt, uint(cost), nil
 }
 
 // Format the given parameters into the common "password hash" form.
