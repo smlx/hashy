@@ -12,14 +12,8 @@ It may be useful to sysadmins or security researchers.
 ---
 **WARNING**
 
-Both the CLI and library interfaces are currently unstable may change at any time.
-
----
----
-**IMPORTANT NOTE**
-
-Many of the password hash functions implemented in this module are known to be insecure.
-Implementation should not be considered endorsement.
+Many of the password hash functions implemented in this module are known to be insecure or bad practice.
+You probably should not use this module for hashing passwords in any modern application.
 
 ---
 
