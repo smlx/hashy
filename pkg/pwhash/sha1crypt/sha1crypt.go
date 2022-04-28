@@ -73,8 +73,8 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// write the initial input to the hash function
 	// h.Write never returns an error
 	h.Write(salt)
-	io.WriteString(h, prefix)
-	io.WriteString(h, strconv.FormatUint(uint64(cost), 10))
+	io.WriteString(h, prefix)                               //nolint:errcheck
+	io.WriteString(h, strconv.FormatUint(uint64(cost), 10)) //nolint:errcheck
 	// run cost number of rounds
 	sum := h.Sum(nil)
 	for i := uint(1); i < cost; i++ {
