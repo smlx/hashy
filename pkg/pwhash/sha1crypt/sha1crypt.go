@@ -61,7 +61,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 			pwhash.ErrSaltLen)
 	}
 	if cost > costMax {
-		return nil, fmt.Errorf("cost larger than %d: %w", costMax,
+		return nil, fmt.Errorf("cost larger than %d: %w", uint64(costMax),
 			pwhash.ErrCost)
 	}
 	if cost < costMin {
