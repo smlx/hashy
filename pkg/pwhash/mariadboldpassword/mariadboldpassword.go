@@ -2,16 +2,15 @@ package mariadboldpassword
 
 import (
 	"bytes"
-	"crypto/subtle"
 	"fmt"
 	"regexp"
 
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 const (
 	// ID is the identification string for this hash function
-	ID = "MariaDB/MySQL OLD_PASSWORD()"
+	ID = "mariaDBOldPassword"
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS
 	keyMaxLen = 1 << 15
 )
@@ -31,7 +30,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// perform some safety checks
 	if len(key) > keyMaxLen {
 		return nil, fmt.Errorf("key longer than %d bytes: %w", keyMaxLen,
-			hash.ErrKeyLen)
+			pwhash.ErrKeyLen)
 	}
 	// return an empty string for empty input
 	if len(key) == 0 {
@@ -65,22 +64,12 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	return r.Bytes(), nil
 }
 
-// Check returns true if the given key matches the given hash, and false
-// otherwise.
-func (f *Function) Check(key, hash, salt []byte, cost uint) (bool, error) {
-	calculatedHash, err := f.Hash(key, salt, cost)
-	if err != nil {
-		return false, err
-	}
-	return subtle.ConstantTimeCompare(hash, calculatedHash) == 1, nil
-}
-
 // Parse the given hash string in its common encoded form.
 func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	hashBytes := []byte(encodedHash)
 	if !parseRegex.Match(hashBytes) {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
-			hash.ErrParse)
+			pwhash.ErrParse)
 	}
 	return hashBytes, nil, 0, nil
 }
@@ -91,17 +80,19 @@ func (*Function) Format(hash, salt []byte, cost uint) string {
 	return fmt.Sprintf("%s", hash)
 }
 
-// HashPassword is a convenience method which takes a password string and
-// returns the hash of the password in common "password hash" form.
-//
-// The cost parameter is not used by this hash function.
-func (f *Function) HashPassword(password string, cost uint) (string, error) {
-	key := []byte(password)
-	// calculate hash
-	hash, err := f.Hash(key, nil, cost)
-	if err != nil {
-		return "", fmt.Errorf("couldn't generate password hash: %w", err)
-	}
-	// format hash
-	return f.Format(hash, nil, cost), nil
+// ID returns the unique identification string of this hash function.
+func (*Function) ID() string {
+	return ID
+}
+
+// DefaultCost always returns zero for this function, as the cost parameter is
+// ignored.
+func (*Function) DefaultCost() uint {
+	return 0
+}
+
+// GenerateSalt returns nil for this function, as the function does not use a
+// salt.
+func (*Function) GenerateSalt() ([]byte, error) {
+	return nil, nil
 }

@@ -3,13 +3,11 @@ package md5crypt
 import (
 	"bytes"
 	"crypto/md5"
-	"crypto/rand"
-	"crypto/subtle"
 	"fmt"
 	"regexp"
 
 	"github.com/smlx/hashy/pkg/b64crypt"
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 const (
@@ -46,11 +44,11 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// perform some safety checks
 	if len(key) > keyMaxLen {
 		return nil, fmt.Errorf("key longer than %d bytes: %w", keyMaxLen,
-			hash.ErrKeyLen)
+			pwhash.ErrKeyLen)
 	}
 	if len(salt) > saltMaxLen {
 		return nil, fmt.Errorf("salt longer than %d bytes: %w", saltMaxLen,
-			hash.ErrSaltLen)
+			pwhash.ErrSaltLen)
 	}
 	// allocate variables
 	var buf bytes.Buffer
@@ -127,22 +125,12 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	return buf.Bytes()[:hashLen], nil
 }
 
-// Check returns true if the given key matches the given hash, and false
-// otherwise.
-func (f *Function) Check(key, hash, salt []byte, cost uint) (bool, error) {
-	calculatedHash, err := f.Hash(key, salt, cost)
-	if err != nil {
-		return false, err
-	}
-	return subtle.ConstantTimeCompare(hash, calculatedHash) == 1, nil
-}
-
 // Parse the given hash string in its common encoded form.
 func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
 	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
 	if len(matches) < 1 || len(matches[0]) < minParseMatches {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
-			hash.ErrParse)
+			pwhash.ErrParse)
 	}
 	return matches[0][2], matches[0][1], 0, nil
 }
@@ -152,30 +140,19 @@ func (*Function) Format(hash, salt []byte, cost uint) string {
 	return fmt.Sprintf("%s%s$%s", prefix, salt, hash)
 }
 
-// HashPassword is a convenience method which takes a password string,
-// generates a secure salt, and returns the hash of the password and salt in
-// common "password hash" form.
-//
-// The cost parameter is ignored for md5crypt.
-func (f *Function) HashPassword(password string, cost uint) (string, error) {
-	// Generate salt by converting six bytes of random data into the b64crypt
-	// format to produce 8 characters. This salt is not interpreted as encoded in
-	// Hash(), but that's just the way md5crypt works.
-	rawSalt := make([]byte, 6)
-	_, err := rand.Read(rawSalt)
-	if err != nil {
-		return "", fmt.Errorf("couldn't generate random salt: %v", err)
-	}
-	var salt bytes.Buffer
-	salt.Write(b64crypt.EncodeBytes(rawSalt[0], rawSalt[1], rawSalt[2]))
-	salt.Write(b64crypt.EncodeBytes(rawSalt[3], rawSalt[4], rawSalt[5]))
-	// convert password
-	key := []byte(password)
-	// calculate hash
-	hash, err := f.Hash(key, salt.Bytes(), cost)
-	if err != nil {
-		return "", fmt.Errorf("couldn't generate password hash: %w", err)
-	}
-	// format hash
-	return f.Format(hash, salt.Bytes(), cost), nil
+// ID returns the unique identification string of this hash function.
+func (*Function) ID() string {
+	return ID
+}
+
+// DefaultCost always returns zero for this function, as the cost parameter is
+// ignored.
+func (*Function) DefaultCost() uint {
+	return 0
+}
+
+// GenerateSalt returns a cryptographically secure salt value which is the
+// maximum size for this funciton.
+func (*Function) GenerateSalt() ([]byte, error) {
+	return b64crypt.GenerateSalt(saltMaxLen)
 }

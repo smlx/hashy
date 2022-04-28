@@ -1,4 +1,4 @@
-package hash
+package pwhash
 
 import "errors"
 
@@ -9,6 +9,10 @@ var (
 	ErrKeyLen = errors.New("invalid key length")
 	// ErrParse is returned when an encoded hash doesn't match the expected format.
 	ErrParse = errors.New("invalid encoded format")
+	// ErrCost is returned when a cost value is out of range.
+	ErrCost = errors.New("invalid cost value")
+	// ErrInternal is returned when an internal error occurs.
+	ErrInternal = errors.New("invalid internal state")
 )
 
 // The Function interface is implemented by each of the hash function
@@ -16,15 +20,16 @@ var (
 type Function interface {
 	// Hash returns the hash of the given key.
 	Hash(key, salt []byte, cost uint) ([]byte, error)
-	// Check returns true if the given key matches the given hash, and false
-	// otherwise.
-	Check(key, hash, salt []byte, cost uint) (bool, error)
 	// Parse the given hash string in its common encoded form.
 	Parse(encodedHash string) (hash, salt []byte, cost uint, err error)
 	// Format the given parameters into the common "password hash" form.
 	Format(hash, salt []byte, cost uint) string
-	// HashPassword is a convenience method which takes a password string,
-	// generates a secure salt, and returns the hash of the password and salt in
-	// common "password hash" form.
-	HashPassword(password string, cost uint) (string, error)
+
+	// ID returns the unique identification string of this hash function.
+	ID() string
+	// DefaultCost returns the maximum cost value for the hash function.
+	DefaultCost() uint
+	// GenerateSalt returns a cryptographically secure salt value which is the
+	// maximum size for this funciton.
+	GenerateSalt() ([]byte, error)
 }

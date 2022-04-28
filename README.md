@@ -12,20 +12,14 @@ It may be useful to sysadmins or security researchers.
 ---
 **WARNING**
 
-Both the CLI and library interfaces are currently unstable may change at any time.
-
----
----
-**IMPORTANT NOTE**
-
-Many of the password hash functions implemented in this module are known to be insecure.
-Implementation should not be considered endorsement.
+Many of the password hash functions implemented in this module are known to be insecure or bad practice.
+You probably should not use this module for hashing passwords in any modern application.
 
 ---
 
 ### Features
 
-* Generate a password hash (similar to `mkpasswd`([code](https://github.com/rfc1036/whois), [manpage](https://manpages.debian.org/testing/whois/mkpasswd.1.en.html))
+* Generate a password hash (similar to `mkpasswd`([code](https://github.com/rfc1036/whois), [manpage](https://manpages.debian.org/testing/whois/mkpasswd.1.en.html)))
 * Identify the format of a password hash (similar to [`hash-identifier`](https://github.com/blackploit/hash-identifier))
 * Check if a password matches a password hash
 * Support a wide range of password hash functions (still a WIP, see the table below)
@@ -47,19 +41,19 @@ If you are interested in a function not listed below please open an issue with d
 
 #### Unix crypt() functions
 
-|             | Supported | Secure?                                                                                                                                                  |
+|             | Supported | Best practice?                                                                                                                                           |
 | ---         | ---       | ---                                                                                                                                                      |
 | bcrypt      | ⏳        | -                                                                                                                                                        |
 | md5crypt    | ✅        | [No](https://web.archive.org/web/20190324130136/http://phk.freebsd.dk:80/sagas/md5crypt_eol.html), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2012-3287) |
 | scrypt      | ⏳        | -                                                                                                                                                        |
-| sha1crypt   | ⏳        | -                                                                                                                                                        |
+| sha1crypt   | ✅        | [No](https://manpages.debian.org/testing/libcrypt-dev/crypt.5.en.html#sha1crypt)                                                                         |
 | sha256crypt | ⏳        | -                                                                                                                                                        |
 | sha512crypt | ⏳        | -                                                                                                                                                        |
 | yescrypt    | ⏳        | -                                                                                                                                                        |
 
 #### Other software
 
-|                                | Supported | Secure?                                                                                                                                         |
+|                                | Supported | Best practice?                                                                                                                                         |
 | ---                            | ---       | ---                                                                                                                                             |
 | MariaDB/MySQL `OLD_PASSWORD()` | ✅        | [No](https://security.stackexchange.com/questions/3133/mysql-old-password-cryptanalysis), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2003-1480) |
 

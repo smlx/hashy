@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/smlx/hashy/pkg/hash"
+	"github.com/smlx/hashy/pkg/pwhash"
 )
 
 // IDCmd represents the id command.
@@ -12,7 +12,7 @@ type IDCmd struct {
 }
 
 // Run the id command.
-func (cmd *IDCmd) Run(functions map[string]hash.Function) error {
+func (cmd *IDCmd) Run(functions map[string]pwhash.Function) error {
 	var matches []string
 	for id, f := range functions {
 		_, _, _, err := f.Parse(cmd.EncodedHash)
