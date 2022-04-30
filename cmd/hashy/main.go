@@ -6,6 +6,7 @@ import (
 	"github.com/smlx/hashy/pkg/pwhash/mariadboldpassword"
 	"github.com/smlx/hashy/pkg/pwhash/md5crypt"
 	"github.com/smlx/hashy/pkg/pwhash/sha1crypt"
+	"github.com/smlx/hashy/pkg/pwhash/sha256crypt"
 )
 
 var (
@@ -33,6 +34,7 @@ func main() {
 		mariadboldpassword.ID: &mariadboldpassword.Function{},
 		md5crypt.ID:           &md5crypt.Function{},
 		sha1crypt.ID:          &sha1crypt.Function{},
+		sha256crypt.ID:        &sha256crypt.Function{},
 	}
 	// execute CLI
 	kctx.FatalIfErrorf(kctx.Run(functions))

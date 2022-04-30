@@ -126,6 +126,10 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 // Parse the given hash string in its common encoded form.
 func (*Function) Parse(encodedHash []byte) ([]byte, []byte, uint, error) {
 	matches := parseRegex.FindSubmatch(encodedHash)
+	if len(matches) < 2 {
+		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
+			pwhash.ErrParse)
+	}
 	salt := matches[parseRegex.SubexpIndex("salt")]
 	hash := matches[parseRegex.SubexpIndex("hash")]
 	if len(salt) == 0 || len(hash) == 0 {
