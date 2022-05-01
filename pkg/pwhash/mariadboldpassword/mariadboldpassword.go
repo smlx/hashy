@@ -65,13 +65,12 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 }
 
 // Parse the given hash string in its common encoded form.
-func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
-	hashBytes := []byte(encodedHash)
-	if !parseRegex.Match(hashBytes) {
+func (*Function) Parse(encodedHash []byte) ([]byte, []byte, uint, error) {
+	if !parseRegex.Match(encodedHash) {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
 			pwhash.ErrParse)
 	}
-	return hashBytes, nil, 0, nil
+	return encodedHash, nil, 0, nil
 }
 
 // Format the given parameters into the common "password hash" form.

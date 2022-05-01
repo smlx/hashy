@@ -15,22 +15,18 @@ const (
 	ID = "md5crypt"
 	// prefix is the crypt standard identifier
 	prefix = "$1$"
-	// hashLen is the length of the output hash
-	hashLen = 22
 	// saltMaxLen is the maximum salt input length
 	saltMaxLen = 8
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS in a similar
 	// manner to the musl implementation
 	keyMaxLen = 1 << 15
-	// minParseMatches is the minimum matches expected in successful parsing
-	minParseMatches = 3
 )
 
 // parseRegex is used to parse the formatted hash into its component parts.
 // This regex is taken from the libxcrypt manpage and extended with capture
 // groups.
 var parseRegex = regexp.MustCompile(
-	`^\$1\$([^$:\n]{1,8})\$([./0-9A-Za-z]{22})$`)
+	`^\$1\$(?P<salt>[^$:\n]{1,8})\$(?P<hash>[./0-9A-Za-z]{22})$`)
 
 // Function implements the hash.Function interface for the md5 function.
 type Function struct{}
@@ -114,25 +110,32 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	}
 	// clear the buffer for the result
 	buf.Reset()
-	// permute the last checksum again, and encode it in not-quite-base64
-	buf.Write(b64crypt.EncodeBytes(sum[0], sum[6], sum[12]))
-	buf.Write(b64crypt.EncodeBytes(sum[1], sum[7], sum[13]))
-	buf.Write(b64crypt.EncodeBytes(sum[2], sum[8], sum[14]))
-	buf.Write(b64crypt.EncodeBytes(sum[3], sum[9], sum[15]))
-	buf.Write(b64crypt.EncodeBytes(sum[4], sum[10], sum[5]))
-	buf.Write(b64crypt.EncodeBytes(0, 0, sum[11]))
-	// return the result
-	return buf.Bytes()[:hashLen], nil
+	// Permute the last checksum again, and encode it in not-quite-base64.
+	// limit is number of bytes in checksum minus bytes encoded after the loop,
+	// divided by three since we write three bytes inside the loop.
+	for i := 0; i < (md5.Size-4)/3; i++ {
+		b64crypt.EncodeBytes(&buf, sum[i], sum[i+6], sum[i+12])
+	}
+	b64crypt.EncodeBytes(&buf, sum[4], sum[10], sum[5])
+	b64crypt.EncodeBytes(&buf, 0, 0, sum[11])
+	// snip the trailing suffix to ignore the final two fully zero twelve bits
+	return buf.Bytes()[:md5.Size*4/3+1], nil
 }
 
 // Parse the given hash string in its common encoded form.
-func (*Function) Parse(encodedHash string) ([]byte, []byte, uint, error) {
-	matches := parseRegex.FindAllSubmatch([]byte(encodedHash), -1)
-	if len(matches) < 1 || len(matches[0]) < minParseMatches {
+func (*Function) Parse(encodedHash []byte) ([]byte, []byte, uint, error) {
+	matches := parseRegex.FindSubmatch(encodedHash)
+	if len(matches) < 2 {
 		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
 			pwhash.ErrParse)
 	}
-	return matches[0][2], matches[0][1], 0, nil
+	salt := matches[parseRegex.SubexpIndex("salt")]
+	hash := matches[parseRegex.SubexpIndex("hash")]
+	if len(salt) == 0 || len(hash) == 0 {
+		return nil, nil, 0, fmt.Errorf("couldn't parse %s format: %w", ID,
+			pwhash.ErrParse)
+	}
+	return hash, salt, 0, nil
 }
 
 // Format the given parameters into the common "password hash" form.

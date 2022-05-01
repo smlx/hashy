@@ -47,7 +47,7 @@ If you are interested in a function not listed below please open an issue with d
 | md5crypt    | ✅        | [No](https://web.archive.org/web/20190324130136/http://phk.freebsd.dk:80/sagas/md5crypt_eol.html), [CVE](https://nvd.nist.gov/vuln/detail/CVE-2012-3287) |
 | scrypt      | ⏳        | -                                                                                                                                                        |
 | sha1crypt   | ✅        | [No](https://manpages.debian.org/testing/libcrypt-dev/crypt.5.en.html#sha1crypt)                                                                         |
-| sha256crypt | ⏳        | -                                                                                                                                                        |
+| sha256crypt | ✅        | [No](https://manpages.debian.org/testing/libcrypt-dev/crypt.5.en.html#sha256crypt)                                                                       |
 | sha512crypt | ⏳        | -                                                                                                                                                        |
 | yescrypt    | ⏳        | -                                                                                                                                                        |
 
