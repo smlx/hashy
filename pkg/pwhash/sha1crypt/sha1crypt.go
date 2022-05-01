@@ -18,8 +18,6 @@ const (
 	ID = "sha1crypt"
 	// prefix is the crypt standard identifier
 	prefix = "$sha1$"
-	// hashLen is the length of the output hash
-	hashLen = 20
 	// saltMaxLen is the maximum salt input length
 	saltMaxLen = 64
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS in a similar
@@ -82,13 +80,13 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 		sum = h.Sum(nil)
 	}
 	var buf bytes.Buffer
-	if len(sum) != hashLen {
-		return nil, fmt.Errorf("unexpected checksum length: %w", pwhash.ErrInternal)
-	}
-	for i := 0; i < hashLen-3; i += 3 {
+	for i := 0; i < sha1.Size-3; i += 3 {
 		b64crypt.EncodeBytes(&buf, sum[i], sum[i+1], sum[i+2])
 	}
-	b64crypt.EncodeBytes(&buf, sum[hashLen-2], sum[hashLen-1], sum[0])
+	b64crypt.EncodeBytes(&buf, sum[sha1.Size-2], sum[sha1.Size-1], sum[0])
+	// no need to snip the trailing suffix here since the sum[0] byte is encoded
+	// twice to produce an integer number of bytes in the encoded checksum
+	// i.e. (20+1)*4/3 = 28.0
 	return buf.Bytes(), nil
 }
 

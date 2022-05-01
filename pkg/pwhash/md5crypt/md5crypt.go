@@ -15,8 +15,6 @@ const (
 	ID = "md5crypt"
 	// prefix is the crypt standard identifier
 	prefix = "$1$"
-	// hashLen is the length of the output hash
-	hashLen = 22
 	// saltMaxLen is the maximum salt input length
 	saltMaxLen = 8
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS in a similar
@@ -112,15 +110,16 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	}
 	// clear the buffer for the result
 	buf.Reset()
-	// permute the last checksum again, and encode it in not-quite-base64
-	b64crypt.EncodeBytes(&buf, sum[0], sum[6], sum[12])
-	b64crypt.EncodeBytes(&buf, sum[1], sum[7], sum[13])
-	b64crypt.EncodeBytes(&buf, sum[2], sum[8], sum[14])
-	b64crypt.EncodeBytes(&buf, sum[3], sum[9], sum[15])
+	// Permute the last checksum again, and encode it in not-quite-base64.
+	// limit is number of bytes in checksum minus bytes encoded after the loop,
+	// divided by three since we write three bytes inside the loop.
+	for i := 0; i < (md5.Size-4)/3; i++ {
+		b64crypt.EncodeBytes(&buf, sum[i], sum[i+6], sum[i+12])
+	}
 	b64crypt.EncodeBytes(&buf, sum[4], sum[10], sum[5])
 	b64crypt.EncodeBytes(&buf, 0, 0, sum[11])
-	// return the result
-	return buf.Bytes()[:hashLen], nil
+	// snip the trailing suffix to ignore the final two fully zero twelve bits
+	return buf.Bytes()[:md5.Size*4/3+1], nil
 }
 
 // Parse the given hash string in its common encoded form.

@@ -17,8 +17,6 @@ const (
 	ID = "sha256crypt"
 	// prefix is the crypt standard identifier
 	prefix = "$5$"
-	// hashLen is the length of the encoded output hash
-	hashLen = 43
 	// saltMaxLen is the maximum salt input length as per libxcrypt
 	saltMaxLen = 16
 	// keyMaxLen sets an arbitrary 32K limit to avoid DoS in a similar
@@ -149,19 +147,18 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	}
 	// encode the output
 	var buf bytes.Buffer
-	b64crypt.EncodeBytes(&buf, sum[0], sum[10], sum[20])
-	b64crypt.EncodeBytes(&buf, sum[21], sum[1], sum[11])
-	b64crypt.EncodeBytes(&buf, sum[12], sum[22], sum[2])
-	b64crypt.EncodeBytes(&buf, sum[3], sum[13], sum[23])
-	b64crypt.EncodeBytes(&buf, sum[24], sum[4], sum[14])
-	b64crypt.EncodeBytes(&buf, sum[15], sum[25], sum[5])
-	b64crypt.EncodeBytes(&buf, sum[6], sum[16], sum[26])
-	b64crypt.EncodeBytes(&buf, sum[27], sum[7], sum[17])
-	b64crypt.EncodeBytes(&buf, sum[18], sum[28], sum[8])
+	// limit is number of bytes in checksum minus bytes encoded after the loop,
+	// divided by three since we write three bytes inside the loop. Increment by
+	// three since we write three times inside the loop.
+	for i := 0; i < (sha256.Size-5)/3; i += 3 {
+		b64crypt.EncodeBytes(&buf, sum[i], sum[i+10], sum[i+20])
+		b64crypt.EncodeBytes(&buf, sum[i+21], sum[i+1], sum[i+11])
+		b64crypt.EncodeBytes(&buf, sum[i+12], sum[i+22], sum[i+2])
+	}
 	b64crypt.EncodeBytes(&buf, sum[9], sum[19], sum[29])
 	b64crypt.EncodeBytes(&buf, 0, sum[31], sum[30])
-	// snip the trailing suffix
-	return buf.Bytes()[:hashLen], nil
+	// snip the trailing suffix to ignore the final fully zero six bits
+	return buf.Bytes()[:sha256.Size*4/3+1], nil
 }
 
 // Parse the given hash string in its common encoded form.
