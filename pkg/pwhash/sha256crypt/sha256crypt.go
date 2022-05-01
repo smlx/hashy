@@ -149,17 +149,17 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	}
 	// encode the output
 	var buf bytes.Buffer
-	buf.Write(b64crypt.EncodeBytes(sum[0], sum[10], sum[20]))
-	buf.Write(b64crypt.EncodeBytes(sum[21], sum[1], sum[11]))
-	buf.Write(b64crypt.EncodeBytes(sum[12], sum[22], sum[2]))
-	buf.Write(b64crypt.EncodeBytes(sum[3], sum[13], sum[23]))
-	buf.Write(b64crypt.EncodeBytes(sum[24], sum[4], sum[14]))
-	buf.Write(b64crypt.EncodeBytes(sum[15], sum[25], sum[5]))
-	buf.Write(b64crypt.EncodeBytes(sum[6], sum[16], sum[26]))
-	buf.Write(b64crypt.EncodeBytes(sum[27], sum[7], sum[17]))
-	buf.Write(b64crypt.EncodeBytes(sum[18], sum[28], sum[8]))
-	buf.Write(b64crypt.EncodeBytes(sum[9], sum[19], sum[29]))
-	buf.Write(b64crypt.EncodeBytes(0, sum[31], sum[30]))
+	b64crypt.EncodeBytes(&buf, sum[0], sum[10], sum[20])
+	b64crypt.EncodeBytes(&buf, sum[21], sum[1], sum[11])
+	b64crypt.EncodeBytes(&buf, sum[12], sum[22], sum[2])
+	b64crypt.EncodeBytes(&buf, sum[3], sum[13], sum[23])
+	b64crypt.EncodeBytes(&buf, sum[24], sum[4], sum[14])
+	b64crypt.EncodeBytes(&buf, sum[15], sum[25], sum[5])
+	b64crypt.EncodeBytes(&buf, sum[6], sum[16], sum[26])
+	b64crypt.EncodeBytes(&buf, sum[27], sum[7], sum[17])
+	b64crypt.EncodeBytes(&buf, sum[18], sum[28], sum[8])
+	b64crypt.EncodeBytes(&buf, sum[9], sum[19], sum[29])
+	b64crypt.EncodeBytes(&buf, 0, sum[31], sum[30])
 	// snip the trailing suffix
 	return buf.Bytes()[:hashLen], nil
 }

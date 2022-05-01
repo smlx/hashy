@@ -113,12 +113,12 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// clear the buffer for the result
 	buf.Reset()
 	// permute the last checksum again, and encode it in not-quite-base64
-	buf.Write(b64crypt.EncodeBytes(sum[0], sum[6], sum[12]))
-	buf.Write(b64crypt.EncodeBytes(sum[1], sum[7], sum[13]))
-	buf.Write(b64crypt.EncodeBytes(sum[2], sum[8], sum[14]))
-	buf.Write(b64crypt.EncodeBytes(sum[3], sum[9], sum[15]))
-	buf.Write(b64crypt.EncodeBytes(sum[4], sum[10], sum[5]))
-	buf.Write(b64crypt.EncodeBytes(0, 0, sum[11]))
+	b64crypt.EncodeBytes(&buf, sum[0], sum[6], sum[12])
+	b64crypt.EncodeBytes(&buf, sum[1], sum[7], sum[13])
+	b64crypt.EncodeBytes(&buf, sum[2], sum[8], sum[14])
+	b64crypt.EncodeBytes(&buf, sum[3], sum[9], sum[15])
+	b64crypt.EncodeBytes(&buf, sum[4], sum[10], sum[5])
+	b64crypt.EncodeBytes(&buf, 0, 0, sum[11])
 	// return the result
 	return buf.Bytes()[:hashLen], nil
 }

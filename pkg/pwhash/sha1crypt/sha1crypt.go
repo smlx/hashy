@@ -86,9 +86,9 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 		return nil, fmt.Errorf("unexpected checksum length: %w", pwhash.ErrInternal)
 	}
 	for i := 0; i < hashLen-3; i += 3 {
-		buf.Write(b64crypt.EncodeBytes(sum[i], sum[i+1], sum[i+2]))
+		b64crypt.EncodeBytes(&buf, sum[i], sum[i+1], sum[i+2])
 	}
-	buf.Write(b64crypt.EncodeBytes(sum[hashLen-2], sum[hashLen-1], sum[0]))
+	b64crypt.EncodeBytes(&buf, sum[hashLen-2], sum[hashLen-1], sum[0])
 	return buf.Bytes(), nil
 }
 

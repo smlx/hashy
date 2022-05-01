@@ -14,16 +14,14 @@ const charset = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	"abcdefghijklmnopqrstuvwxyz"
 
 // EncodeBytes encodes a given three bytes to a set of four characters.
-func EncodeBytes(a, b, c uint8) []byte {
+func EncodeBytes(buf *bytes.Buffer, a, b, c uint8) {
 	// calculate the numeric value
 	n := (uint(a) << 16) + (uint(b) << 8) + uint(c)
 	// encode a character for each 6 bits
-	var buf bytes.Buffer
 	for i := 0; i < 4; i++ {
 		buf.WriteByte(charset[n%64])
 		n >>= 6
 	}
-	return buf.Bytes()
 }
 
 // GenerateSalt returns a cryptographically secure random string of length n
@@ -43,7 +41,7 @@ func GenerateSalt(n uint) ([]byte, error) {
 	}
 	var salt bytes.Buffer
 	for i := uint(0); i < randBytesLen; i += 3 {
-		salt.Write(EncodeBytes(rawSalt[i], rawSalt[i+1], rawSalt[i+2]))
+		EncodeBytes(&salt, rawSalt[i], rawSalt[i+1], rawSalt[i+2])
 	}
 	return salt.Bytes(), nil
 }
