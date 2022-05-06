@@ -70,3 +70,87 @@ func TestHash(t *testing.T) {
 		})
 	}
 }
+
+type parseOutput struct {
+	hash []byte
+	salt []byte
+	cost uint
+	err  error
+}
+
+// https://github.com/hashcat/hashcat/issues/1204
+func TestParse(t *testing.T) {
+	var testCases = map[string]struct {
+		input  string
+		expect parseOutput
+	}{
+		"parse 0": {
+			// Hashcat1234!
+			input: `$sha1$19205$SeTzdv2R$8ZcgMk0PiGRrQdz5xGMncAfymq1C`,
+			expect: parseOutput{
+				hash: []byte(`8ZcgMk0PiGRrQdz5xGMncAfymq1C`),
+				salt: []byte(`SeTzdv2R`),
+				cost: 19205,
+				err:  nil,
+			},
+		},
+		"parse 1": {
+			// hashcat
+			input: `$sha1$18448$Qnzf/O/0$mE6qrpyPuhsPiLckV8phQ2XnMfYF`,
+			expect: parseOutput{
+				hash: []byte(`mE6qrpyPuhsPiLckV8phQ2XnMfYF`),
+				salt: []byte(`Qnzf/O/0`),
+				cost: 18448,
+				err:  nil,
+			},
+		},
+		"parse 2": {
+			// hashcat
+			input: `$sha1$19289$./l/p5Qi$zAMpiG6n/Mh1gVsqpqhShtIsJDrg`,
+			expect: parseOutput{
+				hash: []byte(`zAMpiG6n/Mh1gVsqpqhShtIsJDrg`),
+				salt: []byte(`./l/p5Qi`),
+				cost: 19289,
+				err:  nil,
+			},
+		},
+		"parse 3": {
+			// flipfl0p!
+			input: `$sha1$19295$mROzSQ4a$SFnJ1fAbP4cHqw/16.xDV4s1LpMA`,
+			expect: parseOutput{
+				hash: []byte(`SFnJ1fAbP4cHqw/16.xDV4s1LpMA`),
+				salt: []byte(`mROzSQ4a`),
+				cost: 19295,
+				err:  nil,
+			},
+		},
+		"parse 4": {
+			// stuff
+			input: `$sha1$23933$/WgTkHoe$25rdwdZ95cfgY/Tl6li2/LRIbuVT`,
+			expect: parseOutput{
+				hash: []byte(`25rdwdZ95cfgY/Tl6li2/LRIbuVT`),
+				salt: []byte(`/WgTkHoe`),
+				cost: 23933,
+				err:  nil,
+			},
+		},
+	}
+	var c sha1crypt.Function
+	for name, tc := range testCases {
+		t.Run(name, func(tt *testing.T) {
+			hash, salt, cost, err := c.Parse([]byte(tc.input))
+			if tc.expect.err != err {
+				tt.Fatalf("expected err %v, got %v", tc.expect.err, err)
+			}
+			if !bytes.Equal(tc.expect.hash, hash) {
+				tt.Fatalf("expected hash %v, got %v", tc.expect.hash, hash)
+			}
+			if !bytes.Equal(tc.expect.salt, salt) {
+				tt.Fatalf("expected salt %v, got %v", tc.expect.salt, salt)
+			}
+			if tc.expect.cost != cost {
+				tt.Fatalf("expected cost %v, got %v", tc.expect.cost, cost)
+			}
+		})
+	}
+}
