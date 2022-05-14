@@ -76,7 +76,7 @@ func (*Function) Parse(encodedHash []byte) ([]byte, []byte, uint, error) {
 // Format the given parameters into the common "password hash" form.
 // The salt and cost parameters are not used by this hash function.
 func (*Function) Format(hash, salt []byte, cost uint) string {
-	return fmt.Sprintf("%s", hash)
+	return string(hash)
 }
 
 // ID returns the unique identification string of this hash function.
