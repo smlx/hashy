@@ -48,3 +48,47 @@ func TestHash(t *testing.T) {
 		})
 	}
 }
+
+type parseOutput struct {
+	hash []byte
+	salt []byte
+	cost uint
+	err  error
+}
+
+// https://hashcat.net/wiki/doku.php?id=example_hashes
+func TestParse(t *testing.T) {
+	var testCases = map[string]struct {
+		input  string
+		expect parseOutput
+	}{
+		"hashcat example": {
+			// hashcat
+			input: `7196759210defdc0`,
+			expect: parseOutput{
+				hash: []byte(`7196759210defdc0`),
+				salt: nil,
+				cost: 0,
+				err:  nil,
+			},
+		},
+	}
+	var c mariadboldpassword.Function
+	for name, tc := range testCases {
+		t.Run(name, func(tt *testing.T) {
+			hash, salt, cost, err := c.Parse([]byte(tc.input))
+			if tc.expect.err != err {
+				tt.Fatalf("expected err %v, got %v", tc.expect.err, err)
+			}
+			if !bytes.Equal(tc.expect.hash, hash) {
+				tt.Fatalf("expected hash %v, got %v", tc.expect.hash, hash)
+			}
+			if !bytes.Equal(tc.expect.salt, salt) {
+				tt.Fatalf("expected salt %v, got %v", tc.expect.salt, salt)
+			}
+			if tc.expect.cost != cost {
+				tt.Fatalf("expected cost %v, got %v", tc.expect.cost, cost)
+			}
+		})
+	}
+}
