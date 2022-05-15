@@ -44,7 +44,7 @@ type Function struct{}
 func recycle(h hash.Hash, b []byte, keylen int) {
 	var n int
 	for n = keylen; n >= 64; n -= 64 {
-		h.Write(b[:64])
+		h.Write(b)
 	}
 	h.Write(b[:n])
 }
@@ -90,14 +90,14 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 	// length fo the key
 	var n int
 	for n = len(key); n > 64; n -= 64 {
-		h.Write(sum[:64])
+		h.Write(sum)
 	}
 	h.Write(sum[:n])
 	// alternate writing the initial sum or the key depending on the bit pattern
 	// of the length of the key
 	for n = len(key); n > 0; n >>= 1 {
 		if n%2 != 0 {
-			h.Write(sum[:64])
+			h.Write(sum)
 		} else {
 			h.Write(key)
 		}
@@ -126,7 +126,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 		if n%2 != 0 {
 			recycle(h, pbuf, len(key))
 		} else {
-			h.Write(sum[:64])
+			h.Write(sum)
 		}
 		// write S bytes unless divisible by 3
 		if n%3 != 0 {
@@ -138,7 +138,7 @@ func (*Function) Hash(key, salt []byte, cost uint) ([]byte, error) {
 		}
 		// alternate writing P bytes or most recent intermediate checksum
 		if n%2 != 0 {
-			h.Write(sum[:64])
+			h.Write(sum)
 		} else {
 			recycle(h, pbuf, len(key))
 		}
