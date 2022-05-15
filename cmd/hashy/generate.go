@@ -8,7 +8,7 @@ import (
 
 // GenerateCmd represents the generate command.
 type GenerateCmd struct {
-	Function string `kong:"required,enum='mariaDBOldPassword,md5crypt,sha1crypt,sha256crypt',help='Cryptographic hash function (AKA method) used to generate the password hash'"`
+	Function string `kong:"required,enum='mariaDBOldPassword,md5crypt,sha1crypt,sha256crypt,sha512crypt',help='Cryptographic hash function (AKA method) used to generate the password hash'"`
 	Cost     uint   `kong:"help='CPU time cost. This parameter has a different meaning for each cryptographic hash function.'"`
 	Password string `kong:"required,arg,help='Password to hash'"`
 }

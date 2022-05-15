@@ -48,7 +48,7 @@ If you are interested in a function not listed below please open an issue with d
 | scrypt      | ⏳        | -                                                                                                                                                        |
 | sha1crypt   | ✅        | [No](https://manpages.debian.org/testing/libcrypt-dev/crypt.5.en.html#sha1crypt)                                                                         |
 | sha256crypt | ✅        | [No](https://manpages.debian.org/testing/libcrypt-dev/crypt.5.en.html#sha256crypt)                                                                       |
-| sha512crypt | ⏳        | -                                                                                                                                                        |
+| sha512crypt | ✅        | [No](https://manpages.debian.org/testing/libcrypt-dev/crypt.5.en.html#sha512crypt)                                                                       |
 | yescrypt    | ⏳        | -                                                                                                                                                        |
 
 #### Other software
